@@ -1,0 +1,276 @@
+{
+  "info": {
+    "_postman_id": "chime-sdk-collection",
+    "name": "Chime SDK API",
+    "description": "Collection for testing Chime SDK API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Meeting",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.Meeting && jsonData.Meeting.MeetingId) {",
+              "        pm.environment.set(\"meetingId\", jsonData.Meeting.MeetingId);",
+              "        console.log(\"Meeting ID saved: \" + jsonData.Meeting.MeetingId);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/create-meeting",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "create-meeting"
+          ]
+        },
+        "description": "Create a new Chime SDK meeting"
+      },
+      "response": []
+    },
+    {
+      "name": "Add Attendee",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    if (jsonData.Attendee && jsonData.Attendee.AttendeeId) {",
+              "        pm.environment.set(\"attendeeId\", jsonData.Attendee.AttendeeId);",
+              "        console.log(\"Attendee ID saved: \" + jsonData.Attendee.AttendeeId);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"meetingId\": \"{{meetingId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/add-attendee",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "add-attendee"
+          ]
+        },
+        "description": "Add an attendee to a meeting"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Meeting",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/get-meeting?meetingId={{meetingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "get-meeting"
+          ],
+          "query": [
+            {
+              "key": "meetingId",
+              "value": "{{meetingId}}"
+            }
+          ]
+        },
+        "description": "Get meeting information"
+      },
+      "response": []
+    },
+    {
+      "name": "List Attendees",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/list-attendees?meetingId={{meetingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "list-attendees"
+          ],
+          "query": [
+            {
+              "key": "meetingId",
+              "value": "{{meetingId}}"
+            }
+          ]
+        },
+        "description": "List all attendees in a meeting"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Attendee",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"meetingId\": \"{{meetingId}}\",\n    \"attendeeId\": \"{{attendeeId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/delete-attendee",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "delete-attendee"
+          ]
+        },
+        "description": "Delete an attendee from a meeting"
+      },
+      "response": []
+    },
+    {
+      "name": "Start Meeting Transcription",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"meetingId\": \"{{meetingId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/start-meeting-transcription",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "start-meeting-transcription"
+          ]
+        },
+        "description": "Start transcription for a meeting"
+      },
+      "response": []
+    },
+    {
+      "name": "Stop Meeting Transcription",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"meetingId\": \"{{meetingId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/stop-meeting-transcription",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stop-meeting-transcription"
+          ]
+        },
+        "description": "Stop transcription for a meeting"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Meeting",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"meetingId\": \"{{meetingId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/delete-meeting",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "delete-meeting"
+          ]
+        },
+        "description": "Delete a meeting"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000",
+      "type": "string"
+    },
+    {
+      "key": "meetingId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attendeeId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

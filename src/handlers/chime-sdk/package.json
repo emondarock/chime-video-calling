@@ -1,0 +1,19 @@
+{
+  "name": "chime-sdk-handler",
+  "version": "1.0.0",
+  "description": "Chime SDK Lambda function",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-chime-sdk-meetings": "^3.931.0",
+    "dotenv": "^17.2.3",
+    "mongoose": "^8.19.4",
+    "uuid": "^13.0.0"
+  }
+}

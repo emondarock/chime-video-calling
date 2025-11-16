@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chime SDK Demo Frontend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    header {
+      background: #111827;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1f2937;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    main {
+      padding: 16px 24px 32px;
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+      gap: 16px;
+    }
+    .card {
+      background: #111827;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .small {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px #0ea5e9;
+    }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-right: 6px;
+      margin-top: 6px;
+      background: #10b981;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button.secondary {
+      background: #1f2937;
+      color: #e5e7eb;
+    }
+    button.danger {
+      background: #ef4444;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #status {
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    #status span.badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #1f2937;
+      font-size: 11px;
+    }
+    #status span.badge.online {
+      background: #022c22;
+      color: #6ee7b7;
+    }
+    #status span.badge.offline {
+      background: #1f2937;
+      color: #9ca3af;
+    }
+    #log {
+      background: #020617;
+      color: #e5e7eb;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 11px;
+      max-height: 260px;
+      overflow: auto;
+      white-space: pre-wrap;
+      border: 1px solid #1f2937;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .row > div {
+      flex: 1;
+      min-width: 180px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    /* Video layout */
+    #video-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .video-tile {
+      position: relative;
+      background: #020617;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #1f2937;
+    }
+    .video-tile video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .video-label {
+      position: absolute;
+      left: 6px;
+      bottom: 6px;
+      background: rgba(15,23,42,0.8);
+      color: #e5e7eb;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+    #meetingDetails {
+      font-size: 12px;
+      margin-top: 4px;
+      color: #9ca3af;
+      word-break: break-all;
+    }
+    code {
+      background: #020617;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid #1f2937;
+    }
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Chime SDK Meeting Demo</h1>
+    <div id="status">
+      <span class="badge offline" id="statusBadge">Disconnected</span>
+    </div>
+  </div>
+  <div style="font-size:12px;color:#9ca3af;">
+    Frontend → API Gateway → Lambda → Chime SDK
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: Controls & Info -->
+  <section class="card">
+    <h2>Backend & Meeting Controls</h2>
+    <div class="small">Configure API, create/join meetings, control transcription.</div>
+
+    <div style="margin-top:10px;">
+      <label for="apiBaseUrl">API Base URL (without trailing slash)</label>
+      <input type="text" id="apiBaseUrl" value="http://localhost:3000">
+      <div class="small">Example: <code>https://abcd1234.execute-api.us-east-1.amazonaws.com/prod</code></div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #1f2937;margin:14px 0;">
+
+    <div class="subtitle">Create new meeting (host) & auto join</div>
+    <button id="btnCreateAndJoin">Create meeting & join</button>
+
+    <div id="meetingDetails"></div>
+
+    <hr style="border:none;border-top:1px solid #1f2937;margin:14px 0;">
+
+    <div class="subtitle">Join existing meeting</div>
+    <div class="row">
+      <div>
+        <label for="joinMeetingId">Meeting ID</label>
+        <input type="text" id="joinMeetingId" placeholder="895c4373-e615-44b9-a82e-4492e1222713">
+      </div>
+      <div>
+        <label for="joinName">Display Name</label>
+        <input type="text" id="joinName" placeholder="Your name (optional)">
+      </div>
+    </div>
+    <button class="secondary" id="btnJoinExisting">Join existing meeting</button>
+
+    <hr style="border:none;border-top:1px solid #1f2937;margin:14px 0;">
+
+    <div class="subtitle">Meeting utilities (current meeting)</div>
+    <button class="secondary" id="btnListAttendees">List attendees</button>
+    <button class="secondary" id="btnStartTranscription">Start transcription</button>
+    <button class="secondary" id="btnStopTranscription">Stop transcription</button>
+    <button class="danger" id="btnDeleteMeeting">Delete meeting</button>
+  </section>
+
+  <!-- RIGHT: Videos & Log -->
+  <section class="card">
+    <h2>Media & Debug Log</h2>
+    <div class="small">Local/remote video tiles + HTTP/SDK logs.</div>
+
+    <!-- Hidden audio element for Chime audio -->
+    <audio id="meetingAudio" style="display:none;"></audio>
+
+    <div id="video-container"></div>
+
+    <div style="margin-top:12px;">
+      <button class="secondary" id="btnToggleVideo">Toggle local video</button>
+      <button class="secondary" id="btnLeave">Leave meeting</button>
+    </div>
+
+    <h3 style="font-size:13px;margin-top:14px;">Log</h3>
+    <pre id="log"></pre>
+  </section>
+</main>
+
+<script>
+  // ======== GLOBAL STATE ========
+  let apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+
+  let currentMeeting = null;     // Chime Meeting object
+  let currentAttendee = null;    // Chime Attendee object
+  let meetingSession = null;     // DefaultMeetingSession
+  let audioVideo = null;
+  let isLocalVideoOn = false;
+
+  const logEl = document.getElementById('log');
+  const meetingDetailsEl = document.getElementById('meetingDetails');
+  const statusBadge = document.getElementById('statusBadge');
+  const videoContainer = document.getElementById('video-container');
+
+  function log(message, data) {
+    const time = new Date().toISOString();
+    let line = `[${time}] ${message}`;
+    if (data !== undefined) {
+      line += `\n${JSON.stringify(data, null, 2)}`;
+    }
+    line += '\n\n';
+    logEl.textContent = line + logEl.textContent;
+  }
+
+  function setStatus(online, text) {
+    statusBadge.textContent = text || (online ? 'In meeting' : 'Disconnected');
+    statusBadge.classList.toggle('online', online);
+    statusBadge.classList.toggle('offline', !online);
+  }
+
+  document.getElementById('apiBaseUrl').addEventListener('change', (e) => {
+    apiBaseUrl = e.target.value.trim().replace(/\/+$/, '');
+    log('API base URL set', { apiBaseUrl });
+  });
+
+  // ======== GENERIC API HELPERS ========
+  async function apiPost(path, body) {
+    const url = apiBaseUrl + path;
+    log(`POST ${url}`, body);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : '{}'
+    });
+    const json = await res.json();
+    log(`Response ${res.status} ${url}`, json);
+    if (!res.ok) {
+      throw new Error(json.message || 'Request failed');
+    }
+    return json;
+  }
+
+  async function apiGet(path, params = {}) {
+    const qs = new URLSearchParams(params).toString();
+    const url = apiBaseUrl + path + (qs ? `?${qs}` : '');
+    log(`GET ${url}`);
+    const res = await fetch(url);
+    const json = await res.json();
+    log(`Response ${res.status} ${url}`, json);
+    if (!res.ok) {
+      throw new Error(json.message || 'Request failed');
+    }
+    return json;
+  }
+
+  // ======== UI HANDLERS ========
+
+  // 1. Create meeting and join as host
+  document.getElementById('btnCreateAndJoin').addEventListener('click', async () => {
+    try {
+      const data = await apiPost('/create-meeting');
+      // Your Lambda spreads the SDK response into JSON
+      currentMeeting = data.Meeting || data.meeting || data;
+      // If backend also creates an attendee, use it. Else we'll create one.
+      currentAttendee = (data.Attendees && data.Attendees[0]) || data.attendee || null;
+
+      const meetingId = currentMeeting.MeetingId || currentMeeting.Meeting?.MeetingId;
+      meetingDetailsEl.textContent = `Current MeetingId: ${meetingId}`;
+      document.getElementById('joinMeetingId').value = meetingId || '';
+
+      // If no attendee, call /add-attendee
+      if (!currentAttendee) {
+        const addRes = await apiPost('/add-attendee', { meetingId });
+        currentAttendee = addRes.Attendee || (addRes.Attendees && addRes.Attendees[0]) || addRes;
+      }
+
+      await startChimeSession(currentMeeting, currentAttendee, 'Host');
+    } catch (err) {
+      console.error(err);
+      log('Error creating/joining meeting', { error: err.message });
+      alert('Error creating/joining meeting: ' + err.message);
+    }
+  });
+
+  // 2. Join existing meeting
+  document.getElementById('btnJoinExisting').addEventListener('click', async () => {
+    const meetingId = document.getElementById('joinMeetingId').value.trim();
+    const displayName = document.getElementById('joinName').value.trim() || 'Guest';
+
+    if (!meetingId) {
+      alert('Please enter a MeetingId');
+      return;
+    }
+
+    try {
+      // Get meeting info and add attendee in parallel
+      const [meetingRes, attendeeRes] = await Promise.all([
+        apiGet('/get-meeting', { meetingId }),
+        apiPost('/add-attendee', { meetingId })
+      ]);
+
+      currentMeeting = meetingRes.Meeting || meetingRes.meeting || meetingRes;
+      currentAttendee = attendeeRes.Attendee || (attendeeRes.Attendees && attendeeRes.Attendees[0]) || attendeeRes;
+
+      meetingDetailsEl.textContent = `Current MeetingId: ${meetingId}`;
+      await startChimeSession(currentMeeting, currentAttendee, displayName);
+    } catch (err) {
+      console.error(err);
+      log('Error joining existing meeting', { error: err.message });
+      alert('Error joining existing meeting: ' + err.message);
+    }
+  });
+
+  // 3. List attendees
+  document.getElementById('btnListAttendees').addEventListener('click', async () => {
+    try {
+      const meetingId = getCurrentMeetingId();
+      if (!meetingId) {
+        alert('No current meeting');
+        return;
+      }
+      const res = await apiGet('/list-attendees', { meetingId });
+      alert('Check log for attendees list');
+      log('Attendees list', res);
+    } catch (err) {
+      console.error(err);
+      log('Error listing attendees', { error: err.message });
+    }
+  });
+
+  // 4. Start transcription
+  document.getElementById('btnStartTranscription').addEventListener('click', async () => {
+    try {
+      const meetingId = getCurrentMeetingId();
+      if (!meetingId) {
+        alert('No current meeting');
+        return;
+      }
+      const res = await apiPost('/start-meeting-transcription', { meetingId });
+      alert('Transcription started (check log)');
+      log('Start transcription response', res);
+    } catch (err) {
+      console.error(err);
+      log('Error starting transcription', { error: err.message });
+    }
+  });
+
+  // 5. Stop transcription
+  document.getElementById('btnStopTranscription').addEventListener('click', async () => {
+    try {
+      const meetingId = getCurrentMeetingId();
+      if (!meetingId) {
+        alert('No current meeting');
+        return;
+      }
+      const res = await apiPost('/stop-meeting-transcription', { meetingId });
+      alert('Transcription stopped (check log)');
+      log('Stop transcription response', res);
+    } catch (err) {
+      console.error(err);
+      log('Error stopping transcription', { error: err.message });
+    }
+  });
+
+  // 6. Delete meeting
+  document.getElementById('btnDeleteMeeting').addEventListener('click', async () => {
+    if (!confirm('Delete the current meeting? This will end it for everyone.')) return;
+
+    try {
+      const meetingId = getCurrentMeetingId();
+      if (!meetingId) {
+        alert('No current meeting');
+        return;
+      }
+      const res = await apiPost('/delete-meeting', { meetingId });
+      log('Delete meeting response', res);
+      alert('Meeting deleted');
+
+      // Clean local state
+      leaveMeeting();
+      currentMeeting = null;
+      currentAttendee = null;
+      meetingDetailsEl.textContent = '';
+      document.getElementById('joinMeetingId').value = '';
+    } catch (err) {
+      console.error(err);
+      log('Error deleting meeting', { error: err.message });
+    }
+  });
+
+  // 7. Toggle local video
+  document.getElementById('btnToggleVideo').addEventListener('click', async () => {
+    if (!audioVideo) {
+      alert('Not in a meeting');
+      return;
+    }
+    try {
+      if (!isLocalVideoOn) {
+        await audioVideo.startLocalVideoTile();
+        isLocalVideoOn = true;
+        log('Local video started');
+      } else {
+        audioVideo.stopLocalVideoTile();
+        isLocalVideoOn = false;
+        log('Local video stopped');
+      }
+    } catch (err) {
+      console.error(err);
+      log('Error toggling video', { error: err.message });
+    }
+  });
+
+  // 8. Leave meeting
+  document.getElementById('btnLeave').addEventListener('click', () => {
+    leaveMeeting();
+  });
+
+  function getCurrentMeetingId() {
+    if (!currentMeeting) return null;
+    return currentMeeting.MeetingId || (currentMeeting.Meeting && currentMeeting.Meeting.MeetingId) || currentMeeting.meetingId;
+  }
+
+  // ======== CHIME SESSION SETUP ========
+
+  async function startChimeSession(meeting, attendee, displayName) {
+    try {
+      // Normalize shapes – your Lambda usually returns { Meeting: {..}, Attendees: [...] }
+      const normalizedMeeting = meeting.Meeting || meeting;
+      const normalizedAttendee = attendee.Attendee || attendee;
+
+      log('Starting Chime session', {
+        meetingId: normalizedMeeting.MeetingId,
+        attendeeId: normalizedAttendee.AttendeeId,
+        displayName
+      });
+
+      // Basic Chime SDK wiring
+      const logger = new ChimeSDK.ConsoleLogger('ChimeMeetingLogs', ChimeSDK.LogLevel.INFO);
+      const deviceController = new ChimeSDK.DefaultDeviceController(logger);
+
+      const configuration = new ChimeSDK.MeetingSessionConfiguration(
+        normalizedMeeting,
+        normalizedAttendee
+      );
+
+      meetingSession = new ChimeSDK.DefaultMeetingSession(configuration, logger, deviceController);
+      audioVideo = meetingSession.audioVideo;
+
+      // Bind audio
+      const audioElement = document.getElementById('meetingAudio');
+      audioVideo.bindAudioElement(audioElement);
+
+      // Choose default devices
+      const audioInputs = await audioVideo.listAudioInputDevices();
+      if (audioInputs.length > 0) {
+        await audioVideo.chooseAudioInputDevice(audioInputs[0].deviceId);
+      }
+      const videoInputs = await audioVideo.listVideoInputDevices();
+      if (videoInputs.length > 0) {
+        await audioVideo.chooseVideoInputDevice(videoInputs[0].deviceId);
+      }
+
+      // Attach video observer
+      audioVideo.addObserver({
+        videoTileDidUpdate: tileState => {
+          if (!tileState.boundAttendeeId || tileState.isContent) {
+            return;
+          }
+          const tileId = tileState.tileId;
+          const isLocal = tileState.localTile;
+
+          let el = document.getElementById('video-tile-' + tileId);
+          if (!el) {
+            el = document.createElement('div');
+            el.className = 'video-tile';
+            el.id = 'video-tile-' + tileId;
+
+            const videoEl = document.createElement('video');
+            videoEl.id = 'video-' + tileId;
+            videoEl.autoplay = true;
+            videoEl.playsInline = true;
+            videoEl.muted = isLocal; // local tile muted
+            el.appendChild(videoEl);
+
+            const label = document.createElement('div');
+            label.className = 'video-label';
+            label.textContent = isLocal ? (displayName || 'You') : tileState.boundExternalUserId || 'Guest';
+            el.appendChild(label);
+
+            videoContainer.appendChild(el);
+          }
+
+          const videoElement = document.getElementById('video-' + tileId);
+          audioVideo.bindVideoElement(tileId, videoElement);
+        },
+        videoTileWasRemoved: tileId => {
+          const el = document.getElementById('video-tile-' + tileId);
+          if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        }
+      });
+
+      // Start audio/video
+      audioVideo.start();
+      await audioVideo.startLocalVideoTile();
+      isLocalVideoOn = true;
+
+      setStatus(true, 'In meeting');
+      log('Meeting session started');
+    } catch (err) {
+      console.error(err);
+      log('Error starting Chime session', { error: err.message });
+      alert('Error starting Chime session: ' + err.message);
+      setStatus(false, 'Disconnected');
+    }
+  }
+
+  function leaveMeeting() {
+    if (audioVideo) {
+      try {
+        audioVideo.stopLocalVideoTile();
+        audioVideo.stop();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    meetingSession = null;
+    audioVideo = null;
+    isLocalVideoOn = false;
+    videoContainer.innerHTML = '';
+    setStatus(false, 'Disconnected');
+    log('Left meeting');
+  }
+
+  // Initial log
+  log('Frontend loaded. Set API base URL and use the buttons to create/join meetings.');
+</script>
+
+<!-- Load Chime SDK from CDN with fallback -->
+<script>
+  // Try loading from jsdelivr
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/amazon-chime-sdk-js@3.19.0/dist/amazon-chime-sdk.min.js';
+  script.onload = function() {
+    console.log('✓ Chime SDK loaded successfully');
+    document.getElementById('log').textContent = '[' + new Date().toISOString() + '] Chime SDK loaded successfully\n\n' + document.getElementById('log').textContent;
+  };
+  script.onerror = function() {
+    console.error('✗ Failed to load Chime SDK from CDN');
+    alert('Failed to load Chime SDK. Please check:\n1. Internet connection\n2. Browser console for errors\n3. Try using a local copy of the SDK');
+    document.getElementById('log').textContent = '[' + new Date().toISOString() + '] ERROR: Failed to load Chime SDK from CDN\n\n' + document.getElementById('log').textContent;
+  };
+  document.head.appendChild(script);
+</script>
+</body>
+</html>
