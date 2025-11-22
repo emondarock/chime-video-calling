@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 let conn = null
 
-const uri = process.env.MONGODB_URI || 'mongodb://192.168.0.102:27017/chime-sdk-calling'
+const uri = 'mongodb://192.168.0.104:27017/chime-sdk-calling'
 
 console.log('MongoDB URI:', uri);
 

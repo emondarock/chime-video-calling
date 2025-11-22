@@ -7,12 +7,10 @@ export default defineConfig({
   define: {
     global: "window"
   },
-  server: {
-    host: '0.0.0.0',      // Allow LAN access
+  server: {     // Use IPv4 address explicitly
     allowedHosts: [
       '.ngrok-free.dev',
       'lizeth-curtate-kinetically.ngrok-free.dev'
-    ],
-    port: 5173,      // Optional: fix the port
+    ],      // Use different port number
   }
 })
