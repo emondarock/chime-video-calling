@@ -1,0 +1,41 @@
+# Quick Railway Deployment Commands (Monorepo)
+
+# IMPORTANT: Run these commands from the ROOT directory (D:\ChimeSDKCalling)
+# NOT from the express-server directory
+
+# 1. Make sure your code is pushed to GitHub
+git add .
+git commit -m "Add Railway configuration"
+git push origin master
+
+# 2. Install Railway CLI (run once)
+npm install -g @railway/cli
+
+# 3. Login to Railway
+railway login
+
+# 4. Initialize Railway project from ROOT directory
+railway init
+
+# 5. Deploy to Railway (from ROOT directory)
+railway up
+
+# 6. Open Railway dashboard
+railway open
+
+# 7. View logs
+railway logs
+
+# 8. Set environment variables (interactive)
+railway variables
+
+# Or set variables one by one:
+# railway variables set AWS_ACCESS_KEY_ID=your_key
+# railway variables set AWS_SECRET_ACCESS_KEY=your_secret
+# railway variables set MONGODB_URI=your_mongodb_uri
+# railway variables set REGION=us-east-1
+# railway variables set NODE_ENV=production
+# railway variables set JWT_SECRET=your_jwt_secret
+
+# RECOMMENDED: Use GitHub deployment instead of CLI for monorepos
+# Just push to GitHub and connect via Railway dashboard
