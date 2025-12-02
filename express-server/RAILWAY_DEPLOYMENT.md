@@ -19,10 +19,12 @@ Your repository contains:
 ### 1. Prepare Your Code
 
 ✅ The following files are already configured:
-- `railway.toml` at root for monorepo configuration
+- `Dockerfile` at root - Defines the Docker build process
+- `.dockerignore` at root - Excludes unnecessary files from build
+- `railway.toml` at root - Railway deployment configuration
+- `nixpacks.toml` at root - Alternative Nixpacks configuration (backup)
 - `express-server/package.json` with start script
 - `express-server/.gitignore` to exclude sensitive files
-- `express-server/railway.json` for service-specific configuration
 
 ### 2. Commit and Push Changes (if not already done)
 

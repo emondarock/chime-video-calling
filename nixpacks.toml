@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ['nodejs_20', 'npm']
+
+[phases.install]
+cmds = ['cd express-server && npm ci --omit=dev']
+
+[phases.build]
+cmds = []
+
+[start]
+cmd = 'cd express-server && npm start'

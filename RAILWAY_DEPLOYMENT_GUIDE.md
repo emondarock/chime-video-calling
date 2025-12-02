@@ -47,11 +47,13 @@ railway up
 
 ```
 chime-video-calling/
-├── railway.toml              (← Tells Railway to deploy express-server)
+├── Dockerfile                (← Docker build configuration)
+├── .dockerignore             (← Excludes frontend from build)
+├── railway.toml              (← Railway deployment config)
+├── nixpacks.toml             (← Alternative Nixpacks config)
 ├── express-server/           (← Backend - will be deployed)
 │   ├── server.js
 │   ├── package.json
-│   ├── railway.json
 │   └── ...
 └── real-time-calling/        (Frontend - not deployed here)
     └── ...
@@ -59,7 +61,9 @@ chime-video-calling/
 
 ## Important Notes
 
-- The `railway.toml` file configures Railway to build and run from the `express-server` directory
+- The `Dockerfile` handles the build process with proper Node.js environment
+- The `railway.toml` configures Railway to use the Dockerfile
+- The `.dockerignore` excludes the frontend folder from the backend build
 - Your GitHub repo is already set up: https://github.com/emondarock/chime-video-calling.git
 - Don't forget to migrate MongoDB to Atlas or add MongoDB service in Railway
 - After deployment, update your frontend API URLs to point to the Railway domain
