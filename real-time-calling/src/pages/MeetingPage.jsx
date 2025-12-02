@@ -15,7 +15,7 @@ const MeetingPage = () => {
   const { user, logout } = useAuth();
 
   const [apiBaseUrl] = useState(
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:4000"
+    "http://192.168.0.100:4000"
   );
 
   const [currentMeeting, setCurrentMeeting] = useState(null);

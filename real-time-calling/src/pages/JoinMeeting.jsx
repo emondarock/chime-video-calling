@@ -51,6 +51,11 @@ const JoinMeeting = () => {
           Meeting: data.Meeting,
           Attendee: data.Attendee
         });
+        console.log('✅ User validated and ready to join:', {
+          attendeeId: data.Attendee?.AttendeeId,
+          meetingId: data.Meeting?.MeetingId,
+          externalUserId: data.Attendee?.ExternalUserId
+        });
         setStatus('ready');
       } catch (error) {
         console.error('Error validating meeting token:', error);
@@ -66,17 +71,17 @@ const JoinMeeting = () => {
   }, []);
 
   // Bind video elements
-  useEffect(() => {
-    const audioVideo = audioVideoRef.current;
-    if (!audioVideo) return;
+  // useEffect(() => {
+  //   const audioVideo = audioVideoRef.current;
+  //   if (!audioVideo) return;
 
-    videoTiles.forEach(tile => {
-      const el = videoRefs.current[tile.tileId];
-      if (el) {
-        audioVideo.bindVideoElement(tile.tileId, el);
-      }
-    });
-  }, [videoTiles]);
+  //   videoTiles.forEach(tile => {
+  //     const el = videoRefs.current[tile.tileId];
+  //     if (el) {
+  //       audioVideo.bindVideoElement(tile.tileId, el);
+  //     }
+  //   });
+  // }, [videoTiles]);
 
   const leaveMeeting = useCallback(async () => {
     const audioVideo = audioVideoRef.current;
@@ -127,7 +132,7 @@ const JoinMeeting = () => {
       const normalizedMeeting = meetingData.Meeting || meetingData;
       const normalizedAttendee = meetingData.Attendee || meetingData.attendee;
 
-      const logger = new ConsoleLogger('ChimeMeetingLogs', LogLevel.INFO);
+      const logger = new ConsoleLogger('ChimeMeetingLogs', LogLevel.WARN);
       const deviceController = new DefaultDeviceController(logger);
       const configuration = new MeetingSessionConfiguration(
         normalizedMeeting,
@@ -153,8 +158,10 @@ const JoinMeeting = () => {
       if (audioInputs.length > 0) {
         const audioDeviceId = audioInputs[0].deviceId;
         if (typeof audioVideo.startAudioInput === 'function') {
+          console.log('Starting audio input with device:', audioDeviceId);
           await audioVideo.startAudioInput(audioDeviceId);
         } else if (typeof audioVideo.chooseAudioInputDevice === 'function') {
+          console.log('Choosing audio input device:', audioDeviceId);
           await audioVideo.chooseAudioInputDevice(audioDeviceId);
         }
       }
@@ -163,14 +170,18 @@ const JoinMeeting = () => {
       if (videoInputs.length > 0) {
         const videoDeviceId = videoInputs[0].deviceId;
         if (typeof audioVideo.startVideoInput === 'function') {
+          console.log('Starting video input with device:', videoDeviceId);
           await audioVideo.startVideoInput(videoDeviceId);
         } else if (typeof audioVideo.chooseVideoInputDevice === 'function') {
+          console.log('Choosing video input device:', videoDeviceId);
           await audioVideo.chooseVideoInputDevice(videoDeviceId);
         }
       }
 
+      console.log('📡 Adding observer for video tile updates');
       audioVideo.addObserver({
         videoTileDidUpdate: tileState => {
+          console.log('Video tile updated:', tileState);
           if (!tileState.boundAttendeeId || tileState.isContent) return;
           const tileId = tileState.tileId;
           const isLocal = tileState.localTile;
@@ -180,10 +191,26 @@ const JoinMeeting = () => {
 
           setVideoTiles(prev => {
             if (prev.find(t => t.tileId === tileId)) return prev;
+            console.log(`👤 ${isLocal ? 'Local user' : 'Remote participant'} video tile added:`, {
+              tileId,
+              attendeeId: tileState.boundAttendeeId,
+              label,
+              timestamp: new Date().toISOString()
+            });
             return [...prev, { tileId, isLocal, label }];
           });
         },
         videoTileWasRemoved: tileId => {
+          console.log('🚪 videoTileWasRemoved triggered for tileId:', tileId);
+          const removedTile = videoTiles.find(t => t.tileId === tileId);
+          if (removedTile) {
+            console.log('👋 Participant left:', {
+              tileId,
+              label: removedTile.label,
+              isLocal: removedTile.isLocal,
+              timestamp: new Date().toISOString()
+            });
+          }
           setVideoTiles(prev => prev.filter(t => t.tileId !== tileId));
           const av = audioVideoRef.current;
           const el = videoRefs.current[tileId];
@@ -201,6 +228,12 @@ const JoinMeeting = () => {
       audioVideo.start();
       await audioVideo.startLocalVideoTile();
       setIsLocalVideoOn(true);
+      console.log('🎥 User joined meeting successfully:', {
+        attendeeId: normalizedAttendee?.AttendeeId,
+        externalUserId: normalizedAttendee?.ExternalUserId,
+        meetingId: normalizedMeeting?.MeetingId,
+        timestamp: new Date().toISOString()
+      });
       setStatus('connected');
     } catch (err) {
       console.error('Error starting Chime session:', err);

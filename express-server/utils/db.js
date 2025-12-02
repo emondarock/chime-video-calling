@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 let conn = null
 
-const uri = 'mongodb://192.168.0.104:27017/chime-sdk-calling'
+const uri = 'mongodb+srv://emondarock:xm7Scv4Z8yhvHZqe@omidnetcare-dev.hdv54un.mongodb.net/omidnetcare-dev'
 
 console.log('MongoDB URI:', uri);
 

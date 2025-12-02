@@ -76,6 +76,7 @@ export const checkWithJoinToken = async (meetingToken) => {
   // }
   const decoded = jwt.verify(meetingToken, process.env.MEETING_JWT_SECRET)
   const userEmail = decoded.email
+  console.log('Scheduler meeting status', scheduler.status)
   if (scheduler.status === 'started') {
     const meetingInfo = await getMeeting(scheduler.meetingId)
     const attendee = await addAttendee(scheduler.meetingId, userEmail)
