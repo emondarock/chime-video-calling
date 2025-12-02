@@ -155,7 +155,8 @@ export const createAppointment = async (body, user) => {
         appointmentId: appointment._id,
         scheduledAt: body.start_time,
         invitees: [body.doctor_email, body.patient_email],
-        meetingToken
+        meetingTokenForPatient,
+        meetingTokenForDoctor
       })
       await schedule.save()
 

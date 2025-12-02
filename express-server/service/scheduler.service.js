@@ -57,7 +57,12 @@ export const checkIfMeetingWithinTimeFrame = async (appointmentId, user) => {
 }
 
 export const checkWithJoinToken = async (meetingToken) => {
-  const scheduler = await SchedulerModel.findOne({ meetingToken })
+  const scheduler = await SchedulerModel.findOne({
+    $or: [
+      { meetingTokenForPatient: meetingToken },
+      { meetingTokenForDoctor: meetingToken }
+    ]
+  })
   const now = new Date()
   if (!scheduler) {
     return {
@@ -90,7 +95,12 @@ export const checkWithJoinToken = async (meetingToken) => {
 
   // Create meeting
   const { Meeting, Attendee } = await createMeeting(userEmail)
-  await SchedulerModel.updateOne({ meetingToken }, { status: 'started', meetingId: Meeting.MeetingId })
+  await SchedulerModel.updateOne({
+    $or: [
+      { meetingTokenForPatient: meetingToken },
+      { meetingTokenForDoctor: meetingToken }
+    ]
+  }, { status: 'started', meetingId: Meeting.MeetingId })
   return {
     valid: true,
     message: 'Meeting is valid and created',

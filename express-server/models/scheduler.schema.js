@@ -8,7 +8,8 @@ const SchedulerSchema = new Schema(
     invitees: { type: [String], default: [] },
     //Ignore null values for unique fields
     meetingId: { type: String, unique: true, sparse: true },
-    meetingToken: { type: String, unique: true, sparse: true },
+    meetingTokenForPatient: { type: String, unique: true, sparse: true },
+    meetingTokenForDoctor: { type: String, unique: true, sparse: true },
   },
   {
     timestamps: true
