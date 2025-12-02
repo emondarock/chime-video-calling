@@ -19,6 +19,7 @@ const JoinMeeting = () => {
   const [meetingData, setMeetingData] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [isLocalVideoOn, setIsLocalVideoOn] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [videoTiles, setVideoTiles] = useState([]);
 
   const meetingSessionRef = useRef(null);
@@ -242,6 +243,25 @@ const JoinMeeting = () => {
     }
   };
 
+  const handleToggleMute = async () => {
+    const audioVideo = audioVideoRef.current;
+    if (!audioVideo) return;
+
+    try {
+      if (isMuted) {
+        console.log('🎤 Unmuting microphone');
+        audioVideo.realtimeUnmuteLocalAudio();
+        setIsMuted(false);
+      } else {
+        console.log('🔇 Muting microphone');
+        audioVideo.realtimeMuteLocalAudio();
+        setIsMuted(true);
+      }
+    } catch (err) {
+      console.error('Error toggling mute:', err);
+    }
+  };
+
   const handleLeave = () => {
     if (window.confirm('Leave the meeting?')) {
       leaveMeeting();
@@ -433,6 +453,9 @@ const JoinMeeting = () => {
       </div>
 
       <div className="meeting-controls">
+        <button onClick={handleToggleMute} className="control-button">
+          {isMuted ? '🔇 Unmute' : '🎤 Mute'}
+        </button>
         <button onClick={handleToggleVideo} className="control-button">
           {isLocalVideoOn ? '📹 Turn Off Video' : '📹 Turn On Video'}
         </button>
