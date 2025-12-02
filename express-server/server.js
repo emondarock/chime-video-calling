@@ -490,7 +490,7 @@ const startServer = async () => {
     console.log('Database connected successfully');
 
     // Start Express server
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`\n🚀 Express server running on port ${PORT}`);
       console.log(`📍 Health check: http://localhost:${PORT}/health`);
       console.log(`\n📞 Chime SDK Endpoints:`);

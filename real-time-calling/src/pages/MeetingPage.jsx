@@ -15,7 +15,7 @@ const MeetingPage = () => {
   const { user, logout } = useAuth();
 
   const [apiBaseUrl] = useState(
-    "http://192.168.0.100:4000"
+    "http://192.168.0.104:4000"
   );
 
   const [currentMeeting, setCurrentMeeting] = useState(null);
@@ -78,12 +78,8 @@ const MeetingPage = () => {
     const audioVideo = audioVideoRef.current;
     if (audioVideo) {
       try {
-        if (typeof audioVideo.stopAudioInput === 'function') {
-          await audioVideo.stopAudioInput();
-        }
-        if (typeof audioVideo.stopVideoInput === 'function') {
-          await audioVideo.stopVideoInput();
-        }
+        await audioVideo.stopAudioInput();
+        await audioVideo.stopVideoInput();
         audioVideo.stopLocalVideoTile();
         audioVideo.stop();
       } catch (e) {
@@ -166,21 +162,13 @@ const MeetingPage = () => {
         const audioInputs = await audioVideo.listAudioInputDevices();
         if (audioInputs.length > 0) {
           const audioDeviceId = audioInputs[0].deviceId;
-          if (typeof audioVideo.startAudioInput === 'function') {
-            await audioVideo.startAudioInput(audioDeviceId);
-          } else if (typeof audioVideo.chooseAudioInputDevice === 'function') {
-            await audioVideo.chooseAudioInputDevice(audioDeviceId);
-          }
+          await audioVideo.startAudioInput(audioDeviceId);
         }
 
         const videoInputs = await audioVideo.listVideoInputDevices();
         if (videoInputs.length > 0) {
           const videoDeviceId = videoInputs[0].deviceId;
-          if (typeof audioVideo.startVideoInput === 'function') {
-            await audioVideo.startVideoInput(videoDeviceId);
-          } else if (typeof audioVideo.chooseVideoInputDevice === 'function') {
-            await audioVideo.chooseVideoInputDevice(videoDeviceId);
-          }
+          await audioVideo.startVideoInput(videoDeviceId);
         }
 
         audioVideo.addObserver({

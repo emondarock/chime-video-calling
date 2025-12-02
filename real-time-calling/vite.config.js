@@ -8,6 +8,7 @@ export default defineConfig({
     global: "window"
   },
   server: {     // Use IPv4 address explicitly
+    host: '0.0.0.0',
     allowedHosts: [
       '.ngrok-free.dev',
       'lizeth-curtate-kinetically.ngrok-free.dev'

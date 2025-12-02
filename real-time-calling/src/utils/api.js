@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const AUTH_API_URL = 'https://api.dev.omidnetcare.com';
-const API_BASE_URL = 'http://192.168.0.100:4000';
+const API_BASE_URL = 'http://192.168.0.104:4000';
 
 // Separate auth client for login (different base URL)
 export const authClient = axios.create({

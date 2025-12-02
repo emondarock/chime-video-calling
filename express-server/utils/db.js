@@ -1,9 +1,11 @@
 import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 let conn = null
 
-const uri = 'mongodb+srv://emondarock:xm7Scv4Z8yhvHZqe@omidnetcare-dev.hdv54un.mongodb.net/omidnetcare-dev'
-
+const uri = process.env.MONGODB_URL
 console.log('MongoDB URI:', uri);
 
 export const connect = async function () {

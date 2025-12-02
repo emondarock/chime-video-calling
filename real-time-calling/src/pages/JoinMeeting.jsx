@@ -61,8 +61,7 @@ const JoinMeeting = () => {
         console.error('Error validating meeting token:', error);
         setStatus('error');
         setErrorMessage(
-          error.response?.data?.message ||
-          'Invalid or expired meeting link. Please contact support.'
+          JSON.stringify(error)
         );
       }
     };
@@ -87,12 +86,8 @@ const JoinMeeting = () => {
     const audioVideo = audioVideoRef.current;
     if (audioVideo) {
       try {
-        if (typeof audioVideo.stopAudioInput === 'function') {
-          await audioVideo.stopAudioInput();
-        }
-        if (typeof audioVideo.stopVideoInput === 'function') {
-          await audioVideo.stopVideoInput();
-        }
+        await audioVideo.stopAudioInput();
+        await audioVideo.stopVideoInput();
         audioVideo.stopLocalVideoTile();
         audioVideo.stop();
       } catch (e) {
@@ -157,25 +152,15 @@ const JoinMeeting = () => {
       const audioInputs = await audioVideo.listAudioInputDevices();
       if (audioInputs.length > 0) {
         const audioDeviceId = audioInputs[0].deviceId;
-        if (typeof audioVideo.startAudioInput === 'function') {
-          console.log('Starting audio input with device:', audioDeviceId);
-          await audioVideo.startAudioInput(audioDeviceId);
-        } else if (typeof audioVideo.chooseAudioInputDevice === 'function') {
-          console.log('Choosing audio input device:', audioDeviceId);
-          await audioVideo.chooseAudioInputDevice(audioDeviceId);
-        }
+        console.log('Starting audio input with device:', audioDeviceId);
+        await audioVideo.startAudioInput(audioDeviceId);
       }
 
       const videoInputs = await audioVideo.listVideoInputDevices();
       if (videoInputs.length > 0) {
         const videoDeviceId = videoInputs[0].deviceId;
-        if (typeof audioVideo.startVideoInput === 'function') {
-          console.log('Starting video input with device:', videoDeviceId);
-          await audioVideo.startVideoInput(videoDeviceId);
-        } else if (typeof audioVideo.chooseVideoInputDevice === 'function') {
-          console.log('Choosing video input device:', videoDeviceId);
-          await audioVideo.chooseVideoInputDevice(videoDeviceId);
-        }
+        console.log('Starting video input with device:', videoDeviceId);
+        await audioVideo.startVideoInput(videoDeviceId);
       }
 
       console.log('📡 Adding observer for video tile updates');
