@@ -70,17 +70,18 @@ const JoinMeeting = () => {
   }, []);
 
   // Bind video elements
-  // useEffect(() => {
-  //   const audioVideo = audioVideoRef.current;
-  //   if (!audioVideo) return;
+  useEffect(() => {
+    const audioVideo = audioVideoRef.current;
+    if (!audioVideo) return;
 
-  //   videoTiles.forEach(tile => {
-  //     const el = videoRefs.current[tile.tileId];
-  //     if (el) {
-  //       audioVideo.bindVideoElement(tile.tileId, el);
-  //     }
-  //   });
-  // }, [videoTiles]);
+    videoTiles.forEach(tile => {
+      const el = videoRefs.current[tile.tileId];
+      if (el) {
+        console.log(`🔗 Binding video element for tile ${tile.tileId}`);
+        audioVideo.bindVideoElement(tile.tileId, el);
+      }
+    });
+  }, [videoTiles]);
 
   const leaveMeeting = useCallback(async () => {
     const audioVideo = audioVideoRef.current;
@@ -197,15 +198,6 @@ const JoinMeeting = () => {
             });
           }
           setVideoTiles(prev => prev.filter(t => t.tileId !== tileId));
-          const av = audioVideoRef.current;
-          const el = videoRefs.current[tileId];
-          if (av && el) {
-            try {
-              av.unbindVideoElement(tileId);
-            } catch (e) {
-              console.error(e);
-            }
-          }
           delete videoRefs.current[tileId];
         }
       });
