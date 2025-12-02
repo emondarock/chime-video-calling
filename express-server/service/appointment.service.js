@@ -133,9 +133,17 @@ export const createAppointment = async (body, user) => {
       appointment.is_calling_attached = true
 
       // Create a meeting token and scheduler entry
-      const meetingToken = jwt.sign(
+      const meetingTokenForPatient = jwt.sign(
         {
           email: body.patient_email,
+          appointmentId: appointment._id
+        },
+        process.env.MEETING_JWT_SECRET
+      )
+
+      const meetingTokenForDoctor = jwt.sign(
+        {
+          email: body.doctor_email,
           appointmentId: appointment._id
         },
         process.env.MEETING_JWT_SECRET
@@ -172,7 +180,7 @@ export const createAppointment = async (body, user) => {
           appointment_date: body.date,
           appointment_time: body.start_time,
           invitationTemplate: meetingInvitationTemplate,
-          meeting_url: `${process.env.FRONTEND_URL}/join-meeting?token=${meetingToken}`,
+          meeting_url: `${process.env.FRONTEND_URL}/join-meeting?token=${meetingTokenForPatient}`,
           website_url: 'https://dev.omidnetcare.com/'
         }, patient.email, 'Meeting Invitation', from_email)
 
@@ -187,7 +195,7 @@ export const createAppointment = async (body, user) => {
           appointment_date: body.date,
           appointment_time: body.start_time,
           invitationTemplate: meetingInvitationTemplate,
-          meeting_url: `${process.env.FRONTEND_URL}/join-meeting?token=${meetingToken}`,
+          meeting_url: `${process.env.FRONTEND_URL}/join-meeting?token=${meetingTokenForDoctor}`,
           website_url: 'https://dev.omidnetcare.com/'
         }, body.doctor_email, 'Meeting Invitation', from_email)
       }
