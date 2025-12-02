@@ -147,14 +147,20 @@ const JoinMeeting = () => {
 
       const audioElement = document.getElementById('meetingAudio');
       if (audioElement) {
+        console.log('🔊 Binding audio element');
         audioVideo.bindAudioElement(audioElement);
+      } else {
+        console.error('❌ Audio element not found');
       }
 
       const audioInputs = await audioVideo.listAudioInputDevices();
+      console.log('🎤 Available audio inputs:', audioInputs.length);
       if (audioInputs.length > 0) {
         const audioDeviceId = audioInputs[0].deviceId;
-        console.log('Starting audio input with device:', audioDeviceId);
+        console.log('🎤 Starting audio input with device:', audioDeviceId);
         await audioVideo.startAudioInput(audioDeviceId);
+      } else {
+        console.warn('⚠️ No audio input devices found');
       }
 
       const videoInputs = await audioVideo.listVideoInputDevices();
@@ -272,110 +278,122 @@ const JoinMeeting = () => {
 
   if (status === 'loading') {
     return (
-      <div className="join-meeting-container">
-        <div className="join-meeting-card">
-          <div className="loading-spinner"></div>
-          <h2>Validating your meeting invitation...</h2>
-          <p>Please wait a moment</p>
+      <>
+        <audio id="meetingAudio" autoPlay style={{ display: 'none' }} />
+        <div className="join-meeting-container">
+          <div className="join-meeting-card">
+            <div className="loading-spinner"></div>
+            <h2>Validating your meeting invitation...</h2>
+            <p>Please wait a moment</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (status === 'error') {
     return (
-      <div className="join-meeting-container">
-        <div className="join-meeting-card error">
-          <div className="error-icon">⚠️</div>
-          <h2>Unable to Join Meeting</h2>
-          <p className="error-text">{errorMessage}</p>
+      <>
+        <audio id="meetingAudio" autoPlay style={{ display: 'none' }} />
+        <div className="join-meeting-container">
+          <div className="join-meeting-card error">
+            <div className="error-icon">⚠️</div>
+            <h2>Unable to Join Meeting</h2>
+            <p className="error-text">{errorMessage}</p>
 
-          {appointmentData && (
-            <div className="appointment-info">
-              <h3>Appointment Details</h3>
-              <div className="info-grid">
-                <div className="info-item">
-                  <span className="label">Patient:</span>
-                  <span className="value">{appointmentData.patient_name}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Doctor:</span>
-                  <span className="value">{appointmentData.doctor_name}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">Date & Time:</span>
-                  <span className="value">{formatDateTime(appointmentData.start_time)}</span>
-                </div>
-                {timeRemaining !== null && timeRemaining > 0 && (
+            {appointmentData && (
+              <div className="appointment-info">
+                <h3>Appointment Details</h3>
+                <div className="info-grid">
                   <div className="info-item">
-                    <span className="label">Available in:</span>
-                    <span className="value">{formatTime(timeRemaining)}</span>
+                    <span className="label">Patient:</span>
+                    <span className="value">{appointmentData.patient_name}</span>
                   </div>
-                )}
+                  <div className="info-item">
+                    <span className="label">Doctor:</span>
+                    <span className="value">{appointmentData.doctor_name}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">Date & Time:</span>
+                    <span className="value">{formatDateTime(appointmentData.start_time)}</span>
+                  </div>
+                  {timeRemaining !== null && timeRemaining > 0 && (
+                    <div className="info-item">
+                      <span className="label">Available in:</span>
+                      <span className="value">{formatTime(timeRemaining)}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <button onClick={() => navigate('/dashboard')} className="back-button">
-            Go to Dashboard
-          </button>
+            <button onClick={() => navigate('/dashboard')} className="back-button">
+              Go to Dashboard
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (status === 'ready') {
     return (
-      <div className="join-meeting-container">
-        <div className="join-meeting-card ready">
-          <div className="success-icon">✓</div>
-          <h2>Ready to Join Meeting</h2>
-          <p>Your appointment is ready. Click below to join the video consultation.</p>
+      <>
+        <audio id="meetingAudio" autoPlay style={{ display: 'none' }} />
+        <div className="join-meeting-container">
+          <div className="join-meeting-card ready">
+            <div className="success-icon">✓</div>
+            <h2>Ready to Join Meeting</h2>
+            <p>Your appointment is ready. Click below to join the video consultation.</p>
 
-          <div className="appointment-info">
-            <h3>Appointment Details</h3>
-            <div className="info-grid">
-              <div className="info-item">
-                <span className="label">Patient:</span>
-                <span className="value">{appointmentData?.patient_name}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Doctor:</span>
-                <span className="value">{appointmentData?.doctor_name}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Date & Time:</span>
-                <span className="value">{formatDateTime(appointmentData?.start_time)}</span>
-              </div>
-              {appointmentData?.package_info?.name && (
+            <div className="appointment-info">
+              <h3>Appointment Details</h3>
+              <div className="info-grid">
                 <div className="info-item">
-                  <span className="label">Package:</span>
-                  <span className="value">{appointmentData.package_info.name}</span>
+                  <span className="label">Patient:</span>
+                  <span className="value">{appointmentData?.patient_name}</span>
                 </div>
-              )}
+                <div className="info-item">
+                  <span className="label">Doctor:</span>
+                  <span className="value">{appointmentData?.doctor_name}</span>
+                </div>
+                <div className="info-item">
+                  <span className="label">Date & Time:</span>
+                  <span className="value">{formatDateTime(appointmentData?.start_time)}</span>
+                </div>
+                {appointmentData?.package_info?.name && (
+                  <div className="info-item">
+                    <span className="label">Package:</span>
+                    <span className="value">{appointmentData.package_info.name}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          <button onClick={startChimeSession} className="join-button">
-            Join Meeting Now
-          </button>
-          <button onClick={() => navigate('/dashboard')} className="secondary-button">
-            Cancel
-          </button>
+            <button onClick={startChimeSession} className="join-button">
+              Join Meeting Now
+            </button>
+            <button onClick={() => navigate('/dashboard')} className="secondary-button">
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (status === 'joining') {
     return (
-      <div className="join-meeting-container">
-        <div className="join-meeting-card">
-          <div className="loading-spinner"></div>
-          <h2>Joining meeting...</h2>
-          <p>Setting up your video and audio</p>
+      <>
+        <audio id="meetingAudio" autoPlay style={{ display: 'none' }} />
+        <div className="join-meeting-container">
+          <div className="join-meeting-card">
+            <div className="loading-spinner"></div>
+            <h2>Joining meeting...</h2>
+            <p>Setting up your video and audio</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -392,7 +410,7 @@ const JoinMeeting = () => {
         </button>
       </div>
 
-      <audio id="meetingAudio" style={{ display: 'none' }} />
+      <audio id="meetingAudio" autoPlay style={{ display: 'none' }} />
 
       <div className="video-grid">
         {videoTiles.map(tile => (
