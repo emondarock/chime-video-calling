@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const AUTH_API_URL = 'https://api.dev.omidnetcare.com';
-const API_BASE_URL = 'https://chime-video-calling-production.up.railway.app';
+const API_BASE_URL = 'https://api.dev.omidnetcare.com';
 
 // Separate auth client for login (different base URL)
 export const authClient = axios.create({
@@ -24,7 +24,7 @@ apiClient.interceptors.request.use(
   config => {
     const token = localStorage.getItem('idToken');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = API_BASE_URL === 'https://api.dev.omidnetcare.com' ? `${token}` : `Bearer ${token}`;
     }
     return config;
   },

@@ -52,6 +52,7 @@ const JoinMeeting = () => {
           Meeting: data.Meeting,
           Attendee: data.Attendee
         });
+        setAppointmentData(data.decoded)
         console.log('✅ User validated and ready to join:', {
           attendeeId: data.Attendee?.AttendeeId,
           meetingId: data.Meeting?.MeetingId,
@@ -335,7 +336,7 @@ const JoinMeeting = () => {
                   </div>
                   <div className="info-item">
                     <span className="label">Date & Time:</span>
-                    <span className="value">{formatDateTime(appointmentData.start_time)}</span>
+                    <span className="value">{formatDateTime(appointmentData.appointment_time)}</span>
                   </div>
                   {timeRemaining !== null && timeRemaining > 0 && (
                     <div className="info-item">
@@ -370,7 +371,7 @@ const JoinMeeting = () => {
               <h3>Appointment Details</h3>
               <div className="info-grid">
                 <div className="info-item">
-                  <span className="label">Patient:</span>
+                  <span className="label">{appointmentData?.isDoctor ? "Doctor" : "Patient"}</span>
                   <span className="value">{appointmentData?.patient_name}</span>
                 </div>
                 <div className="info-item">
@@ -379,7 +380,7 @@ const JoinMeeting = () => {
                 </div>
                 <div className="info-item">
                   <span className="label">Date & Time:</span>
-                  <span className="value">{formatDateTime(appointmentData?.start_time)}</span>
+                  <span className="value">{formatDateTime(appointmentData?.appointment_time)}</span>
                 </div>
                 {appointmentData?.package_info?.name && (
                   <div className="info-item">

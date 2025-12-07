@@ -15,7 +15,7 @@ const MeetingPage = () => {
   const { user, logout } = useAuth();
 
   const [apiBaseUrl] = useState(
-    "https://chime-video-calling-production.up.railway.app"
+    "https://api.dev.omidnetcare.com"
   );
 
   const [currentMeeting, setCurrentMeeting] = useState(null);
